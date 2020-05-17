@@ -32,6 +32,19 @@ namespace ProjectManagementSystem.Domain.Mapper
                 .ForMember(dest => dest.ProjectId,
                     opt => opt.MapFrom(src => src.ProjectId.Value))
                 .IgnoreAllVirtual();
+
+            CreateMap<TaskRequestUpdateDto, Task>()
+                .ForMember(dest => dest.State,
+                    opt => opt.MapFrom(src => (int)src.State.Value))
+                .ForMember(dest => dest.StartDate,
+                    opt => opt.Ignore())
+                .ForMember(dest => dest.FinishDate,
+                    opt => opt.Ignore())
+                .ForMember(dest => dest.TaskId,
+                    opt => opt.MapFrom(src => src.TaskId.Value))
+                .ForMember(dest => dest.ProjectId,
+                    opt => opt.MapFrom(src => src.ProjectId.Value))
+                .IgnoreAllVirtual();
         }
     }
 }

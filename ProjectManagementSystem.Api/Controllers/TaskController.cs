@@ -70,7 +70,7 @@ namespace ProjectManagementSystem.Api.Controllers
         /// <summary>
         /// Creates the task.
         /// </summary>
-        /// <param name="taskRequestCreateDto">The task request create dto.</param>
+        /// <param name="taskRequestCreateDto">The task request create DTO.</param>
         /// <returns>Task&lt;IActionResult&gt;.</returns>
         [HttpPost]
         [ProducesResponseType((int)HttpStatusCode.Created, Type = typeof(TaskResponseDto))]
@@ -91,6 +91,58 @@ namespace ProjectManagementSystem.Api.Controllers
             catch (CreationException e)
             {
                 return Conflict(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Updates the task.
+        /// </summary>
+        /// <param name="taskRequestUpdateDto">The task request update DTO.</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
+        [HttpPut]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(TaskResponseDto))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ModelStateDictionary))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Conflict, Type = typeof(string))]
+        [SwaggerOperation(Tags = new[] { Constants.Task })]
+        public async Task<IActionResult> UpdateTask(TaskRequestUpdateDto taskRequestUpdateDto)
+        {
+            try
+            {
+                var taskResponseDto = await _taskService.Update(taskRequestUpdateDto);
+
+                return Ok(taskResponseDto);
+            }
+            catch (UpdateException e)
+            {
+                return Conflict(e.Message);
+            }
+            catch (RecordNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Deletes the task.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
+        [HttpDelete("{id:int}")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(void))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        [SwaggerOperation(Tags = new[] { Constants.Task })]
+        public async Task<IActionResult> DeleteTask(int id)
+        {
+            try
+            {
+                await _taskService.Delete(id);
+
+                return Ok();
+            }
+            catch (RecordNotFoundException e)
+            {
+                return NotFound(e.Message);
             }
         }
     }

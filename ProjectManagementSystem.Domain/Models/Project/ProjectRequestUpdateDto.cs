@@ -3,7 +3,7 @@
 namespace ProjectManagementSystem.Domain.Models.Project
 {
     /// <summary>
-    /// Dto to create a project.
+    /// DTO to update a project.
     /// </summary>
     public class ProjectRequestUpdateDto
     {

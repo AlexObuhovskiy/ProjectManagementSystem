@@ -75,6 +75,7 @@ namespace ProjectManagementSystem.Domain.Services
                     break;
                 case State.InProgress:
                     project.StartDate = DateTime.UtcNow;
+                    project.FinishDate = null;
                     break;
                 case State.Completed:
                     project.FinishDate = DateTime.UtcNow;

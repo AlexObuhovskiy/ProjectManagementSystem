@@ -4,6 +4,8 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using ProjectManagementSystem.DataAccess.Models;
+using Task = System.Threading.Tasks.Task;
 
 namespace ProjectManagementSystem.DataAccess.Interfaces
 {
@@ -13,6 +15,12 @@ namespace ProjectManagementSystem.DataAccess.Interfaces
     /// <typeparam name="TEntity">The type of the T entity.</typeparam>
     public interface IGenericRepository<TEntity> where TEntity : class
     {
+        /// <summary>
+        /// Gets the context.
+        /// </summary>
+        /// <value>The context.</value>
+        ProjectManagementSystemContext Context { get; }
+
         /// <summary>
         /// DB set for TEntity
         /// </summary>

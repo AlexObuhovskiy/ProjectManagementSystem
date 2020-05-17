@@ -96,7 +96,7 @@ namespace ProjectManagementSystem.Api.Controllers
         /// <summary>
         /// Updates the project.
         /// </summary>
-        /// <param name="projectRequestUpdateDto">The project request update dto.</param>
+        /// <param name="projectRequestUpdateDto">The project request update DTO.</param>
         /// <returns>Task&lt;IActionResult&gt;.</returns>
         [HttpPut]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ProjectResponseDto))]

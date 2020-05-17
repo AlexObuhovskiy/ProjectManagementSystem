@@ -19,7 +19,7 @@ namespace ProjectManagementSystem.DataAccess.Repositories
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
         /// <inhertidoc/>
-        protected readonly ProjectManagementSystemContext Context;
+        public ProjectManagementSystemContext Context { get; }
 
         /// <inhertidoc/>
         public DbSet<TEntity> DbSet { get; }

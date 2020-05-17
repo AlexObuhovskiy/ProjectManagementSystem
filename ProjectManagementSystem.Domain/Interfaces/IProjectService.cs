@@ -22,21 +22,21 @@ namespace ProjectManagementSystem.Domain.Interfaces
         Task<ProjectResponseDto> GetById(int id);
 
         /// <summary>
-        /// Creates the specified project by request dto.
+        /// Creates the specified project by request DTO.
         /// </summary>
-        /// <param name="projectRequestCreateDto">The project request dto.</param>
+        /// <param name="projectRequestCreateDto">The project request DTO.</param>
         /// <returns>Task&lt;ProjectResponseDto&gt;.</returns>
         Task<ProjectResponseDto> Create(ProjectRequestCreateDto projectRequestCreateDto);
 
         /// <summary>
-        /// Updates the specified project by request create dto.
+        /// Updates the specified project by request create DTO.
         /// </summary>
         /// <param name="projectRequestUpdateDto">The project request update DTO.</param>
         /// <returns>Task&lt;ProjectResponseDto&gt;.</returns>
         Task<ProjectResponseDto> Update(ProjectRequestUpdateDto projectRequestUpdateDto);
 
         /// <summary>
-        /// Deletes the specified identifier.
+        /// Deletes the specified project by identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns>Task.</returns>

@@ -1,10 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using ProjectManagementSystem.DataAccess.Extensions;
 using ProjectManagementSystem.DataAccess.Interfaces;
+using ProjectManagementSystem.Domain.Enums;
 using ProjectManagementSystem.Domain.Exceptions;
 using ProjectManagementSystem.Domain.Interfaces;
-using ProjectManagementSystem.Domain.Models.Project;
 using ProjectManagementSystem.Domain.Models.Task;
 
 namespace ProjectManagementSystem.Domain.Services
@@ -75,6 +78,81 @@ namespace ProjectManagementSystem.Domain.Services
             var responseDto = _mapper.Map<TaskResponseDto>(entity);
 
             return responseDto;
+        }
+
+        /// <inhertidoc/>
+        public async Task<TaskResponseDto> Update(TaskRequestUpdateDto taskRequestUpdateDto)
+        {
+            // ReSharper disable once PossibleInvalidOperationException
+            var existingTask = await GetEntityById(taskRequestUpdateDto.TaskId.Value);
+            var existingTaskProjectId = existingTask.ProjectId;
+            var entityToSave = _mapper.Map(taskRequestUpdateDto, existingTask);
+            SetupTaskByState(entityToSave);
+
+            _taskRepository.Update(entityToSave);
+
+            await _projectStateService.CheckProjectAndParentsToChangeState(taskRequestUpdateDto.ProjectId);
+
+            if (existingTaskProjectId != taskRequestUpdateDto.ProjectId)
+            {
+                await _projectStateService.CheckProjectAndParentsToChangeState(existingTaskProjectId);
+            }
+
+            try
+            {
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch (SqlException e)
+            {
+                throw new UpdateException(e.Message);
+            }
+
+            var responseDto = _mapper.Map<TaskResponseDto>(entityToSave);
+
+            return responseDto;
+        }
+
+        /// <inhertidoc/>
+        public async Task Delete(int id)
+        {
+            var existingTask = _taskRepository.GetTaskWithAllChildren(id);
+            if (existingTask == null)
+            {
+                throw new RecordNotFoundException($"There is no {nameof(DataAccess.Models.Task)} with id {id}");
+            }
+
+            DeleteTaskWithAllChildren(existingTask);
+            await _projectStateService.CheckProjectAndParentsToChangeState(existingTask.ProjectId);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        private void SetupTaskByState(DataAccess.Models.Task task)
+        {
+            switch ((State)task.State)
+            {
+                case State.Planned:
+                    task.StartDate = null;
+                    task.FinishDate = null;
+                    break;
+                case State.InProgress:
+                    task.StartDate = DateTime.UtcNow;
+                    task.FinishDate = null;
+                    break;
+                case State.Completed:
+                    task.FinishDate = DateTime.UtcNow;
+                    break;
+            }
+        }
+
+        private void DeleteTaskWithAllChildren(DataAccess.Models.Task taskToDeleteChildren)
+        {
+            foreach (var task in taskToDeleteChildren.InverseParent)
+            {
+                DeleteTaskWithAllChildren(task);
+                _taskRepository.Delete(task);
+            }
+
+            _taskRepository.Delete(taskToDeleteChildren);
         }
 
         private async Task<DataAccess.Models.Task> GetEntityById(int id)
