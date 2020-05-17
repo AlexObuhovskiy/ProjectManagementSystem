@@ -3,6 +3,9 @@ using ProjectManagementSystem.Domain.Models.Project;
 
 namespace ProjectManagementSystem.Domain.Interfaces
 {
+    /// <summary>
+    /// IProjectService for work with projects
+    /// </summary>
     public interface IProjectService
     {
         /// <summary>

@@ -9,6 +9,9 @@ using ProjectManagementSystem.Api.Infrastructure.Swagger;
 
 namespace ProjectManagementSystem.Api.Infrastructure
 {
+    /// <summary>
+    /// Class SwaggerExtensions.
+    /// </summary>
     public static class SwaggerExtensions
     {
         /// <summary>

@@ -15,6 +15,9 @@ using ProjectManagementSystem.Api.Infrastructure;
 
 namespace ProjectManagementSystem.Api
 {
+    /// <summary>
+    /// Class Startup.
+    /// </summary>
     public class Startup
     {
         /// <summary>

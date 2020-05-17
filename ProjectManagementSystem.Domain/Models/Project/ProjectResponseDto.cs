@@ -2,6 +2,9 @@
 
 namespace ProjectManagementSystem.Domain.Models.Project
 {
+    /// <summary>
+    /// ProjectResponseDto for return.
+    /// </summary>
     public class ProjectResponseDto
     {
         /// <summary>

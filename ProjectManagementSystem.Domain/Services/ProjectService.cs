@@ -19,6 +19,11 @@ namespace ProjectManagementSystem.Domain.Services
         private readonly IGenericRepository<Project> _projectRepository;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProjectService"/> class.
+        /// </summary>
+        /// <param name="unitOfWork">The unit of work.</param>
+        /// <param name="mapper">The mapper.</param>
         public ProjectService(
             IUnitOfWork unitOfWork, IMapper mapper)
         {

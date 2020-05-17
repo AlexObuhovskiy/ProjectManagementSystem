@@ -253,3 +253,6 @@ paket-files/
 *.sln.iml
 
 # test settings file
+ProjectManagementSystem.Api/ProjectManagementSystem.Api.xml
+ProjectManagementSystem.DataAccess/ProjectManagementSystem.DataAccess.xml
+ProjectManagementSystem.Domain/ProjectManagementSystem.Domain.xml

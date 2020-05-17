@@ -12,6 +12,9 @@ namespace ProjectManagementSystem.Domain.Mapper
     /// <seealso cref="AutoMapper.Profile" />
     public class ProjectProfile : Profile
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProjectProfile"/> class.
+        /// </summary>
         public ProjectProfile()
         {
             CreateMap<Project, ProjectResponseDto>();
