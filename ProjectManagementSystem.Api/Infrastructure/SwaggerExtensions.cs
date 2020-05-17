@@ -28,10 +28,11 @@ namespace ProjectManagementSystem.Api.Infrastructure
                 var docInfos = GetSwaggerDocInfo();
                 foreach (var di in docInfos)
                 {
-                    c.SwaggerDoc(di.Item1,
+                    c.SwaggerDoc(
+                        di.Item1,
                         new OpenApiInfo
                         {
-                            Version = "v1",
+                            Version = $"v{assemblyName.Version.Major}.{assemblyName.Version.MajorRevision}",
                             Title = $"{assemblyName.Name} {di.Item1}",
                             Description = di.Item2
                         });
@@ -83,7 +84,7 @@ namespace ProjectManagementSystem.Api.Infrastructure
         {
             return new List<(string, string)>
             {
-                ("Project", "")
+                ("Project", ""),
             };
         }
     }

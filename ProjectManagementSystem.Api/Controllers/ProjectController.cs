@@ -36,7 +36,7 @@ namespace ProjectManagementSystem.Api.Controllers
         /// <returns>Task&lt;IActionResult&gt;.</returns>
         [HttpGet]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ProjectResponseDto[]))]
-        [SwaggerOperation(Tags = new[] { Constatns.Project })]
+        [SwaggerOperation(Tags = new[] { Constants.Project })]
         public async Task<IActionResult> GetAllProjects()
         {
             var projects = await _projectService.GetAllProjects();
@@ -51,7 +51,7 @@ namespace ProjectManagementSystem.Api.Controllers
         [HttpGet("{id:int}")]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ProjectResponseDto))]
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(void))]
-        [SwaggerOperation(Tags = new[] { Constatns.Project })]
+        [SwaggerOperation(Tags = new[] { Constants.Project })]
         public async Task<IActionResult> GetProjectById(int id)
         {
             var project = await _projectService.GetById(id);
@@ -73,7 +73,7 @@ namespace ProjectManagementSystem.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.Created, Type = typeof(ProjectResponseDto))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ModelStateDictionary))]
         [ProducesResponseType((int)HttpStatusCode.Conflict, Type = typeof(string))]
-        [SwaggerOperation(Tags = new[] { Constatns.Project })]
+        [SwaggerOperation(Tags = new[] { Constants.Project })]
         public async Task<IActionResult> CreateProject(ProjectRequestCreateDto projectRequestCreateDto)
         {
             try
@@ -101,7 +101,7 @@ namespace ProjectManagementSystem.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ModelStateDictionary))]
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Conflict, Type = typeof(string))]
-        [SwaggerOperation(Tags = new[] { Constatns.Project })]
+        [SwaggerOperation(Tags = new[] { Constants.Project })]
         public async Task<IActionResult> UpdateProject(ProjectRequestUpdateDto projectRequestUpdateDto)
         {
             try
@@ -128,7 +128,7 @@ namespace ProjectManagementSystem.Api.Controllers
         [HttpDelete("{id:int}")]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(void))]
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
-        [SwaggerOperation(Tags = new[] { Constatns.Project })]
+        [SwaggerOperation(Tags = new[] { Constants.Project })]
         public async Task<IActionResult> DeleteProject(int id)
         {
             try

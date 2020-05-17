@@ -50,10 +50,11 @@ namespace ProjectManagementSystem.Api
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IProjectStateService, ProjectStateService>();
-
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddScoped<ITaskService, TaskService>();
 
             services.AddSwaggerGen();
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
 
         /// <summary>
