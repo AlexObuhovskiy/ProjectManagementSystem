@@ -11,6 +11,7 @@ using ProjectManagementSystem.DataAccess.UnitOfWork;
 using ProjectManagementSystem.Domain.Interfaces;
 using ProjectManagementSystem.Domain.Services;
 using System;
+using ProjectManagementSystem.Api.Infrastructure;
 
 namespace ProjectManagementSystem.Api
 {
@@ -47,6 +48,8 @@ namespace ProjectManagementSystem.Api
             services.AddScoped<IProjectService, ProjectService>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            services.AddSwaggerGen();
         }
 
         /// <summary>
@@ -62,6 +65,13 @@ namespace ProjectManagementSystem.Api
             }
 
             app.UseHttpsRedirection();
+
+            app.UseSwagger(o =>
+            {
+                o.RouteTemplate = "swagger/{documentName}/swagger.json";
+                o.SerializeAsV2 = false;
+            });
+            app.UseSwaggerUi(Configuration);
 
             app.UseRouting();
 
