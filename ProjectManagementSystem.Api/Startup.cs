@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,9 @@ using Microsoft.Extensions.Hosting;
 using ProjectManagementSystem.DataAccess.Interfaces;
 using ProjectManagementSystem.DataAccess.Models;
 using ProjectManagementSystem.DataAccess.UnitOfWork;
+using ProjectManagementSystem.Domain.Interfaces;
+using ProjectManagementSystem.Domain.Services;
+using System;
 
 namespace ProjectManagementSystem.Api
 {
@@ -40,6 +44,9 @@ namespace ProjectManagementSystem.Api
                 options => options.UseSqlServer(connectionString));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IProjectService, ProjectService>();
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
 
         /// <summary>

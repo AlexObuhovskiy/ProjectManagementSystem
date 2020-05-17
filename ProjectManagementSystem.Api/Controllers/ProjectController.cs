@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ProjectManagementSystem.DataAccess.Models;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using ProjectManagementSystem.Domain.Interfaces;
 
 namespace ProjectManagementSystem.Api.Controllers
 {
@@ -7,14 +8,19 @@ namespace ProjectManagementSystem.Api.Controllers
     [Route("api/[controller]")]
     public class ProjectController : Controller
     {
-        public ProjectController(ProjectManagementSystemContext context)
+        private readonly IProjectService _projectService;
+
+        public ProjectController(IProjectService projectService)
         {
+            _projectService = projectService;
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok();
+            var projects = await _projectService.GetAllProjects();
+
+            return Ok(projects);
         }
     }
 }
