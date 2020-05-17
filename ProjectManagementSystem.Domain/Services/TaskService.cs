@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.Data.SqlClient;
 using ProjectManagementSystem.DataAccess.Interfaces;
 using ProjectManagementSystem.Domain.Exceptions;
 using ProjectManagementSystem.Domain.Interfaces;
+using ProjectManagementSystem.Domain.Models.Project;
 using ProjectManagementSystem.Domain.Models.Task;
 
 namespace ProjectManagementSystem.Domain.Services
@@ -50,6 +52,27 @@ namespace ProjectManagementSystem.Domain.Services
         {
             var task = await GetEntityById(id);
             var responseDto = _mapper.Map<TaskResponseDto>(task);
+
+            return responseDto;
+        }
+
+        /// <inhertidoc/>
+        public async Task<TaskResponseDto> Create(TaskRequestCreateDto taskRequestCreateDto)
+        {
+            var entity = _mapper.Map<DataAccess.Models.Task>(taskRequestCreateDto);
+
+            await _taskRepository.InsertAsync(entity);
+            
+            try
+            {
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch (SqlException e)
+            {
+                throw new CreationException(e.Message);
+            }
+
+            var responseDto = _mapper.Map<TaskResponseDto>(entity);
 
             return responseDto;
         }

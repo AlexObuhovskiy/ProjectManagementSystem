@@ -1,7 +1,7 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using ProjectManagementSystem.Api.Infrastructure;
 using ProjectManagementSystem.Domain.Exceptions;
 using ProjectManagementSystem.Domain.Interfaces;
@@ -24,10 +24,10 @@ namespace ProjectManagementSystem.Api.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskController"/> class.
         /// </summary>
-        /// <param name="TaskService">The Task service.</param>
-        public TaskController(ITaskService TaskService)
+        /// <param name="taskService">The Task service.</param>
+        public TaskController(ITaskService taskService)
         {
-            _taskService = TaskService;
+            _taskService = taskService;
         }
 
         /// <summary>
@@ -64,6 +64,33 @@ namespace ProjectManagementSystem.Api.Controllers
             catch (RecordNotFoundException e)
             {
                 return NotFound(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Creates the task.
+        /// </summary>
+        /// <param name="taskRequestCreateDto">The task request create dto.</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
+        [HttpPost]
+        [ProducesResponseType((int)HttpStatusCode.Created, Type = typeof(TaskResponseDto))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ModelStateDictionary))]
+        [ProducesResponseType((int)HttpStatusCode.Conflict, Type = typeof(string))]
+        [SwaggerOperation(Tags = new[] { Constants.Task })]
+        public async Task<IActionResult> CreateTask(TaskRequestCreateDto taskRequestCreateDto)
+        {
+            try
+            {
+                var taskResponseDto = await _taskService.Create(taskRequestCreateDto);
+
+                return CreatedAtAction(
+                    nameof(GetTaskById),
+                    new { id = taskResponseDto.ProjectId },
+                    taskResponseDto);
+            }
+            catch (CreationException e)
+            {
+                return Conflict(e.Message);
             }
         }
     }

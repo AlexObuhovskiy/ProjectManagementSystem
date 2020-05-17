@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ProjectManagementSystem.DataAccess.Models;
 using ProjectManagementSystem.Domain.Enums;
+using ProjectManagementSystem.Domain.Extensions;
 using ProjectManagementSystem.Domain.Models.Task;
 
 namespace ProjectManagementSystem.Domain.Mapper
@@ -20,6 +21,17 @@ namespace ProjectManagementSystem.Domain.Mapper
             CreateMap<Task, TaskResponseDto>()
                 .ForMember(dest => dest.State,
                     opt => opt.MapFrom(src => (State)src.State));
+
+            CreateMap<TaskRequestCreateDto, Task>()
+                .ForMember(dest => dest.State,
+                    opt => opt.Ignore())
+                .ForMember(dest => dest.StartDate,
+                    opt => opt.Ignore())
+                .ForMember(dest => dest.FinishDate,
+                    opt => opt.Ignore())
+                .ForMember(dest => dest.ProjectId,
+                    opt => opt.MapFrom(src => src.ProjectId.Value))
+                .IgnoreAllVirtual();
         }
     }
 }

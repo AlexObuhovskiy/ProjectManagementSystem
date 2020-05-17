@@ -20,5 +20,12 @@ namespace ProjectManagementSystem.Domain.Interfaces
         /// <param name="id">The identifier.</param>
         /// <returns>Task&lt;TaskResponseDto&gt;.</returns>
         Task<TaskResponseDto> GetById(int id);
+
+        /// <summary>
+        /// Creates the specified task by request create dto.
+        /// </summary>
+        /// <param name="taskRequestCreateDto">The task request create dto.</param>
+        /// <returns>Task&lt;TaskResponseDto&gt;.</returns>
+        Task<TaskResponseDto> Create(TaskRequestCreateDto taskRequestCreateDto);
     }
 }
