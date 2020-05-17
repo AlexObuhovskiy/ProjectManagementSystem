@@ -6,6 +6,7 @@ using ProjectManagementSystem.Domain.Exceptions;
 using ProjectManagementSystem.Domain.Interfaces;
 using ProjectManagementSystem.Domain.Models.Project;
 using System.Threading.Tasks;
+using ProjectManagementSystem.DataAccess.Extensions;
 using Task = System.Threading.Tasks.Task;
 
 namespace ProjectManagementSystem.Domain.Services
@@ -110,10 +111,26 @@ namespace ProjectManagementSystem.Domain.Services
         /// <inhertidoc/>
         public async Task Delete(int id)
         {
-            var existingProject = await GetEntityById(id);
-            _projectRepository.Delete(existingProject);
+            var existingProject = _projectRepository.GetProjectWithAllChildren(id);
+            if (existingProject == null)
+            {
+                throw new RecordNotFoundException($"There is no {nameof(Project)} with id {id}");
+            }
+
+            DeleteProjectWithAllChildren(existingProject);
             await _projectStateService.CheckProjectAndParentsToChangeState(existingProject.ParentId);
             await _unitOfWork.SaveChangesAsync();
+        }
+
+        private void DeleteProjectWithAllChildren(Project projectToDeleteChildren)
+        {
+            foreach (var project in projectToDeleteChildren.InverseParent)
+            {
+                DeleteProjectWithAllChildren(project);
+                _projectRepository.Delete(project);
+            }
+
+            _projectRepository.Delete(projectToDeleteChildren);
         }
 
         private async Task<Project> GetEntityById(int id)
