@@ -49,6 +49,7 @@ namespace ProjectManagementSystem.Api
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<IProjectStateService, ProjectStateService>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

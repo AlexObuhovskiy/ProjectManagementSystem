@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using JetBrains.Annotations;
 using ProjectManagementSystem.DataAccess.Models;
+using ProjectManagementSystem.Domain.Enums;
+using ProjectManagementSystem.Domain.Extensions;
 using ProjectManagementSystem.Domain.Models.Project;
 
 namespace ProjectManagementSystem.Domain.Mapper
@@ -17,7 +18,31 @@ namespace ProjectManagementSystem.Domain.Mapper
         /// </summary>
         public ProjectProfile()
         {
-            CreateMap<Project, ProjectResponseDto>();
+            CreateMap<Project, ProjectResponseDto>()
+                .ForMember(dest => dest.State,
+                    opt => opt.MapFrom(src => (State)src.State));
+           
+            CreateMap<ProjectRequestCreateDto, Project>()
+                .ForMember(dest => dest.State,
+                    opt => opt.Ignore())
+                .ForMember(dest => dest.StartDate,
+                    opt => opt.Ignore())
+                .ForMember(dest => dest.FinishDate,
+                    opt => opt.Ignore())
+                .ForMember(dest => dest.ProjectId,
+                    opt => opt.Ignore())
+                .IgnoreAllVirtual();
+
+            CreateMap<ProjectRequestUpdateDto, Project>()
+                .ForMember(dest => dest.State,
+                    opt => opt.Ignore())
+                .ForMember(dest => dest.StartDate,
+                    opt => opt.Ignore())
+                .ForMember(dest => dest.FinishDate,
+                    opt => opt.Ignore())
+                .ForMember(dest => dest.ProjectId,
+                    opt => opt.Ignore())
+                .IgnoreAllVirtual();
         }
     }
 }
