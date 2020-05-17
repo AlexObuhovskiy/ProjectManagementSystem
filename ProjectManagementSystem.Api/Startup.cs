@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ProjectManagementSystem.DataAccess.Interfaces;
 using ProjectManagementSystem.DataAccess.Models;
+using ProjectManagementSystem.DataAccess.UnitOfWork;
 
 namespace ProjectManagementSystem.Api
 {
@@ -34,7 +36,10 @@ namespace ProjectManagementSystem.Api
             services.AddControllers();
 
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<ProjectManagementSystemContext>(options => options.UseSqlServer(connectionString));
+            services.AddDbContext<ProjectManagementSystemContext>(
+                options => options.UseSqlServer(connectionString));
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
         /// <summary>
