@@ -121,7 +121,7 @@ namespace ProjectManagementSystem.Domain.Services
             var entity = await _projectRepository.GetByIdAsync(id);
             if (entity == null)
             {
-                throw new RecordNotFoundException($"There is no project with id {id}");
+                throw new RecordNotFoundException($"There is no {nameof(Project)} with id {id}");
             }
 
             return entity;

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -54,14 +55,15 @@ namespace ProjectManagementSystem.Api.Controllers
         [SwaggerOperation(Tags = new[] { Constants.Project })]
         public async Task<IActionResult> GetProjectById(int id)
         {
-            var project = await _projectService.GetById(id);
-
-            if (project == null)
+            try
             {
-                return NotFound();
+                var project = await _projectService.GetById(id);
+                return Ok(project);
             }
-
-            return Ok(project);
+            catch (RecordNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         /// <summary>

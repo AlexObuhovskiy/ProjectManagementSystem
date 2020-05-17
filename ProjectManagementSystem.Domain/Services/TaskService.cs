@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
 using ProjectManagementSystem.DataAccess.Interfaces;
+using ProjectManagementSystem.Domain.Exceptions;
 using ProjectManagementSystem.Domain.Interfaces;
 using ProjectManagementSystem.Domain.Models.Task;
 
@@ -42,6 +43,26 @@ namespace ProjectManagementSystem.Domain.Services
             var responseDtoArray = _mapper.Map<TaskResponseDto[]>(tasks);
 
             return responseDtoArray;
+        }
+
+        /// <inhertidoc/>
+        public async Task<TaskResponseDto> GetById(int id)
+        {
+            var task = await GetEntityById(id);
+            var responseDto = _mapper.Map<TaskResponseDto>(task);
+
+            return responseDto;
+        }
+
+        private async Task<DataAccess.Models.Task> GetEntityById(int id)
+        {
+            var entity = await _taskRepository.GetByIdAsync(id);
+            if (entity == null)
+            {
+                throw new RecordNotFoundException($"There is no {nameof(DataAccess.Models.Task)} with id {id}");
+            }
+
+            return entity;
         }
     }
 }
