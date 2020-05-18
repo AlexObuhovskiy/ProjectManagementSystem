@@ -112,9 +112,7 @@ namespace ProjectManagementSystem.Domain.Services
         public async Task Delete(int id)
         {
             var existingProject = await GetEntityById(id);
-            _projectRepository.LoadAllChildren(
-                existingProject,
-                entity => entity.InverseParent);
+            _projectRepository.LoadAllChildren(existingProject);
 
             DeleteProjectWithAllChildren(existingProject);
             await _projectStateService.CheckProjectAndParentsToChangeState(existingProject.ParentId);

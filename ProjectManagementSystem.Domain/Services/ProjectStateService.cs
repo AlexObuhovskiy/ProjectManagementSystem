@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using ProjectManagementSystem.DataAccess.Extensions;
 using ProjectManagementSystem.DataAccess.Interfaces;
 using ProjectManagementSystem.DataAccess.Models;
 using ProjectManagementSystem.Domain.Enums;
@@ -17,6 +19,7 @@ namespace ProjectManagementSystem.Domain.Services
     public class ProjectStateService : IProjectStateService
     {
         private readonly IGenericRepository<Project> _projectRepository;
+        private readonly IGenericRepository<DataAccess.Models.Task> _taskRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectStateService"/> class.
@@ -25,12 +28,13 @@ namespace ProjectManagementSystem.Domain.Services
         public ProjectStateService(IUnitOfWork unitOfWork)
         {
             _projectRepository = unitOfWork.GetRepository<Project>();
+            _taskRepository = unitOfWork.GetRepository<DataAccess.Models.Task>();
         }
 
         /// <inhertidoc/>
         public async Task CheckProjectAndParentsToChangeState(int? id)
         {
-            if (id == null)
+            if (!id.HasValue)
             {
                 return;
             }
@@ -41,7 +45,7 @@ namespace ProjectManagementSystem.Domain.Services
                         p => p.Include(x => x.Task)))
                 .First();
 
-            var currentState = GetCurrentProjectState(project);
+            var currentState = await GetCurrentProjectStateById(project);
             if (currentState == (State)project.State)
             {
                 return;
@@ -52,14 +56,16 @@ namespace ProjectManagementSystem.Domain.Services
             await CheckProjectAndParentsToChangeState(project.ParentId);
         }
 
-        private State GetCurrentProjectState(Project project)
+        private async Task<State> GetCurrentProjectStateById(Project project)
         {
-            if (project.Task.Any() && project.Task.All(task => (State)task.State == State.Completed))
+            var tasks = await _projectRepository.GetAllTaskIncludeSubProjects(project, _taskRepository);
+
+            if (tasks.Any() && tasks.All(task => (State)task.State == State.Completed))
             {
                 return State.Completed;
             }
 
-            if (project.Task.Any(task => (State)task.State == State.InProgress))
+            if (tasks.Any(task => (State)task.State == State.InProgress))
             {
                 return State.InProgress;
             }
@@ -74,7 +80,7 @@ namespace ProjectManagementSystem.Domain.Services
                 case State.Planned:
                     break;
                 case State.InProgress:
-                    project.StartDate = DateTime.UtcNow;
+                    project.StartDate ??= DateTime.UtcNow;
                     project.FinishDate = null;
                     break;
                 case State.Completed:

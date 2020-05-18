@@ -92,8 +92,11 @@ namespace ProjectManagementSystem.DataAccess.Repositories
         /// <inhertidoc/>
         public void LoadAllChildren(
             TEntity entity,
-            Expression<Func<TEntity, IEnumerable<TEntity>>> propertyExpression)
+            Expression<Func<TEntity, IEnumerable<TEntity>>> propertyExpression,
+            List<TEntity> list = null)
         {
+            list?.Add(entity);
+
             Context.Entry(entity).Collection(propertyExpression).Query().Load();
 
             var func = propertyExpression.Compile();
@@ -106,7 +109,7 @@ namespace ProjectManagementSystem.DataAccess.Repositories
 
             foreach (TEntity child in parents)
             {
-                LoadAllChildren(child, propertyExpression);
+                LoadAllChildren(child, propertyExpression, list);
             }
         }
     }

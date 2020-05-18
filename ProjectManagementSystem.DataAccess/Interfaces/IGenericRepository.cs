@@ -74,8 +74,10 @@ namespace ProjectManagementSystem.DataAccess.Interfaces
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <param name="childrenExpression">The children expression.</param>
+        /// <param name="list">The list.</param>
         void LoadAllChildren(
             TEntity entity,
-            Expression<Func<TEntity, IEnumerable<TEntity>>> childrenExpression);
+            Expression<Func<TEntity, IEnumerable<TEntity>>> childrenExpression,
+            List<TEntity> list = null);
     }
 }

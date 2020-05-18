@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Internal;
 using ProjectManagementSystem.DataAccess.Extensions;
 using ProjectManagementSystem.DataAccess.Interfaces;
 using ProjectManagementSystem.Domain.Enums;
@@ -113,7 +112,7 @@ namespace ProjectManagementSystem.Domain.Services
         public async Task Delete(int id)
         {
             var existingTask = await GetEntityById(id);
-            _taskRepository.LoadAllChildren(existingTask, task => task.InverseParent);
+            _taskRepository.LoadAllChildren(existingTask);
 
             DeleteTaskWithAllChildren(existingTask);
             await _projectStateService.CheckProjectAndParentsToChangeState(existingTask.ProjectId);
@@ -133,7 +132,7 @@ namespace ProjectManagementSystem.Domain.Services
 
         private async Task CheckTaskCanChangeProject(DataAccess.Models.Task task)
         {
-            _taskRepository.LoadAllChildren(task, t => t.InverseParent);
+            _taskRepository.LoadAllChildren(task);
             var parent = await _taskRepository.GetByIdAsync(task.ParentId);
 
             if (task.InverseParent.Any(t => t.ProjectId != task.ProjectId) ||

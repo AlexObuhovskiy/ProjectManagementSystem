@@ -33,7 +33,7 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
             _unitOfWork
                 .Setup(u => u.GetRepository<Project>())
                 .Returns(_projectRepository.Object);
-            
+
             _projectService = new ProjectService(
                 _unitOfWork.Object,
                 _mapper.Object,
@@ -233,8 +233,10 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
 
             _projectRepository
                 .Setup(p =>
-                    p.LoadAllChildren(It.IsAny<Project>(),
-            It.IsAny<Expression<Func<Project, IEnumerable<Project>>>>()));
+                    p.LoadAllChildren(
+                        It.IsAny<Project>(),
+                        It.IsAny<Expression<Func<Project, IEnumerable<Project>>>>(),
+                        It.IsAny<List<Project>>()));
 
             _projectRepository
                 .Setup(p => p.Delete(It.IsAny<Project>()));

@@ -231,8 +231,8 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
         [InlineData(State.InProgress, false, true)]
         public async Task Update_CorrectTaskSetupWithStartAndFinishDates(
             State state,
-            bool startDateIsNull,
-            bool finishDateIsNull)
+            bool isStartDateNull,
+            bool isFinishDateNull)
         {
             // Arrange
             var dto = new TaskRequestUpdateDto
@@ -271,7 +271,7 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
             var utcTimeFinish = DateTime.UtcNow;
 
             // Assert
-            if (startDateIsNull)
+            if (isStartDateNull)
             {
                 task.StartDate.Should().BeNull();
             }
@@ -280,7 +280,7 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
                 task.StartDate.Should().BeAfter(utcTimeStart).And.BeBefore(utcTimeFinish);
             }
 
-            if (finishDateIsNull)
+            if (isFinishDateNull)
             {
                 task.FinishDate.Should().BeNull();
             }
@@ -410,8 +410,10 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
 
             _taskRepository
                 .Setup(p =>
-                    p.LoadAllChildren(It.IsAny<DataAccess.Models.Task>(),
-            It.IsAny<Expression<Func<DataAccess.Models.Task, IEnumerable<DataAccess.Models.Task>>>>()));
+                    p.LoadAllChildren(
+                        It.IsAny<DataAccess.Models.Task>(),
+                        It.IsAny<Expression<Func<DataAccess.Models.Task, IEnumerable<DataAccess.Models.Task>>>>(),
+                        It.IsAny<List<DataAccess.Models.Task>>()));
 
             _taskRepository
                 .Setup(p => p.Delete(It.IsAny<DataAccess.Models.Task>()));
