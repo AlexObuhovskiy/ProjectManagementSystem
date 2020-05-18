@@ -111,7 +111,7 @@ namespace ProjectManagementSystem.Domain.Services
         /// <inhertidoc/>
         public async Task Delete(int id)
         {
-            var existingProject = _projectRepository.GetProjectWithAllChildren(id);
+            var existingProject = await _projectRepository.GetProjectWithAllChildren(id);
             if (existingProject == null)
             {
                 throw new RecordNotFoundException($"There is no {nameof(Project)} with id {id}");

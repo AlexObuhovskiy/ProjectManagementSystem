@@ -23,6 +23,8 @@ namespace ProjectManagementSystem.Domain.Mapper
                     opt => opt.MapFrom(src => (State)src.State));
 
             CreateMap<TaskRequestCreateDto, Task>()
+                .ForMember(dest => dest.TaskId,
+                    opt => opt.Ignore())
                 .ForMember(dest => dest.State,
                     opt => opt.Ignore())
                 .ForMember(dest => dest.StartDate,

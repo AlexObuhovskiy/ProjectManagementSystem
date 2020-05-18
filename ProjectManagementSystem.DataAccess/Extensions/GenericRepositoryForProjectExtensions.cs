@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProjectManagementSystem.DataAccess.Interfaces;
+using ProjectManagementSystem.DataAccess.Models;
 
 namespace ProjectManagementSystem.DataAccess.Extensions
 {
@@ -15,25 +17,27 @@ namespace ProjectManagementSystem.DataAccess.Extensions
         /// <param name="repository">The repository.</param>
         /// <param name="id">The identifier.</param>
         /// <returns>Models.Project.</returns>
-        public static Models.Project GetProjectWithAllChildren(
-            this IGenericRepository<Models.Project> repository,
+        public static async Task<Project> GetProjectWithAllChildren(
+            this IGenericRepository<Project> repository,
             int id)
         {
-            var entity = repository.DbSet.FirstOrDefault(e => e.ProjectId == id);
+            var entity = await repository.GetByIdAsync(id);
             GetChildren(entity, repository);
             return entity;
         }
 
-        private static void GetChildren(Models.Project parent, IGenericRepository<Models.Project> repository)
+        private static void GetChildren(Project parent, IGenericRepository<Project> repository)
         {
             repository.Context.Entry(parent).Collection(e => e.InverseParent).Query().Load();
 
-            if (parent.InverseParent != null)
+            if (parent.InverseParent == null)
             {
-                foreach (Models.Project child in parent.InverseParent)
-                {
-                    GetChildren(child, repository);
-                }
+                return;
+            }
+
+            foreach (Project child in parent.InverseParent)
+            {
+                GetChildren(child, repository);
             }
         }
     }

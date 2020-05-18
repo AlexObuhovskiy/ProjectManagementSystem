@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ProjectManagementSystem.DataAccess.Interfaces;
+using ProjectManagementSystem.DataAccess.Models;
 
 namespace ProjectManagementSystem.DataAccess.Extensions
 {
@@ -19,8 +16,8 @@ namespace ProjectManagementSystem.DataAccess.Extensions
         /// <param name="repository">The repository.</param>
         /// <param name="id">The identifier.</param>
         /// <returns>Models.Task.</returns>
-        public static Models.Task GetTaskWithAllChildren(
-            this IGenericRepository<Models.Task> repository,
+        public static Task GetTaskWithAllChildren(
+            this IGenericRepository<Task> repository,
             int id)
         {
             var entity = repository.DbSet.FirstOrDefault(e => e.TaskId == id);
@@ -28,16 +25,18 @@ namespace ProjectManagementSystem.DataAccess.Extensions
             return entity;
         }
 
-        private static void GetChildren(Models.Task parent, IGenericRepository<Models.Task> repository)
+        private static void GetChildren(Task parent, IGenericRepository<Task> repository)
         {
             repository.Context.Entry(parent).Collection(e => e.InverseParent).Query().Load();
 
-            if (parent.InverseParent != null)
+            if (parent.InverseParent == null)
             {
-                foreach (Models.Task child in parent.InverseParent)
-                {
-                    GetChildren(child, repository);
-                }
+                return;
+            }
+
+            foreach (Task child in parent.InverseParent)
+            {
+                GetChildren(child, repository);
             }
         }
     }
