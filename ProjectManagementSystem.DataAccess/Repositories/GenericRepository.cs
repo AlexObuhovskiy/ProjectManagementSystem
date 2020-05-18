@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -86,6 +87,27 @@ namespace ProjectManagementSystem.DataAccess.Repositories
         {
             DbSet.Attach(entityToUpdate);
             Context.Entry(entityToUpdate).State = EntityState.Modified;
+        }
+
+        /// <inhertidoc/>
+        public void LoadAllChildren(
+            TEntity entity,
+            Expression<Func<TEntity, IEnumerable<TEntity>>> propertyExpression)
+        {
+            Context.Entry(entity).Collection(propertyExpression).Query().Load();
+
+            var func = propertyExpression.Compile();
+            var parents = func(entity);
+
+            if (parents == null)
+            {
+                return;
+            }
+
+            foreach (TEntity child in parents)
+            {
+                LoadAllChildren(child, propertyExpression);
+            }
         }
     }
 }

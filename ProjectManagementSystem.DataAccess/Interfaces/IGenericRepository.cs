@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -67,5 +68,14 @@ namespace ProjectManagementSystem.DataAccess.Interfaces
         /// </summary>
         /// <param name="entityToUpdate"></param>
         void Update(TEntity entityToUpdate);
+
+        /// <summary>
+        /// Loads all children.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <param name="childrenExpression">The children expression.</param>
+        void LoadAllChildren(
+            TEntity entity,
+            Expression<Func<TEntity, IEnumerable<TEntity>>> childrenExpression);
     }
 }

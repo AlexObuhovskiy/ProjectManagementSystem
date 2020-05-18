@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using ProjectManagementSystem.DataAccess.Extensions;
 using ProjectManagementSystem.DataAccess.Interfaces;
 using ProjectManagementSystem.Domain.Enums;
@@ -115,11 +114,8 @@ namespace ProjectManagementSystem.Domain.Services
         /// <inhertidoc/>
         public async Task Delete(int id)
         {
-            var existingTask = _taskRepository.GetTaskWithAllChildren(id);
-            if (existingTask == null)
-            {
-                throw new RecordNotFoundException($"There is no {nameof(DataAccess.Models.Task)} with id {id}");
-            }
+            var existingTask = await _taskRepository.GetByIdAsync(id);
+            _taskRepository.LoadAllChildren(existingTask, task => task.InverseParent);
 
             DeleteTaskWithAllChildren(existingTask);
             await _projectStateService.CheckProjectAndParentsToChangeState(existingTask.ProjectId);

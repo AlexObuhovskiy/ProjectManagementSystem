@@ -111,11 +111,10 @@ namespace ProjectManagementSystem.Domain.Services
         /// <inhertidoc/>
         public async Task Delete(int id)
         {
-            var existingProject = await _projectRepository.GetProjectWithAllChildren(id);
-            if (existingProject == null)
-            {
-                throw new RecordNotFoundException($"There is no {nameof(Project)} with id {id}");
-            }
+            var existingProject = await GetEntityById(id);
+            _projectRepository.LoadAllChildren(
+                existingProject,
+                entity => entity.InverseParent);
 
             DeleteProjectWithAllChildren(existingProject);
             await _projectStateService.CheckProjectAndParentsToChangeState(existingProject.ParentId);
