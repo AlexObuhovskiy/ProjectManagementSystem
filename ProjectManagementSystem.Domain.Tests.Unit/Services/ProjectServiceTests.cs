@@ -1,4 +1,6 @@
-﻿using System.Data.SqlTypes;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using AutoMapper;
 using Microsoft.Data.SqlClient;
@@ -31,6 +33,7 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
             _unitOfWork
                 .Setup(u => u.GetRepository<Project>())
                 .Returns(_projectRepository.Object);
+            
             _projectService = new ProjectService(
                 _unitOfWork.Object,
                 _mapper.Object,
@@ -196,19 +199,62 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
                     Times.Exactly(2));
         }
 
-        //[Fact]
-        //public async Task Delete_WhenEntityNotFound_ThenRecordNotFoundExceptionIsThrown()
-        //{
-        //    // Arrange
-        //    int projectId = 1;
+        [Fact]
+        public async Task Delete_WhenEntityNotFound_ThenRecordNotFoundExceptionIsThrown()
+        {
+            // Arrange
+            int projectId = 1;
 
-        //    _projectRepository
-        //        .Setup(p => p.GetByIdAsync(It.IsAny<int>()))
-        //        .Returns(Task.FromResult(It.IsAny<Project>()));
+            _projectRepository
+                .Setup(p => p.GetByIdAsync(It.IsAny<int>()))
+                .Returns(Task.FromResult(It.IsAny<Project>()));
 
-        //    // Act
-        //    // Assert
-        //    await Assert.ThrowsAsync<RecordNotFoundException>(() => _projectService.Delete(projectId));
-        //}
+            // Act
+            // Assert
+            await Assert.ThrowsAsync<RecordNotFoundException>(() => _projectService.Delete(projectId));
+        }
+
+        [Fact]
+        public async Task Delete_WhenTwoChildrenExists_ThenDeleteCalledThreeTimesAndCheckProjectCalled()
+        {
+            // Arrange
+            var project = new Project
+            {
+                InverseParent = new List<Project>
+                {
+                    new Project(),
+                    new Project()
+                }
+            };
+
+            _projectRepository
+                .Setup(p => p.GetByIdAsync(It.IsAny<int>()))
+                .Returns(Task.FromResult(project));
+
+            _projectRepository
+                .Setup(p =>
+                    p.LoadAllChildren(It.IsAny<Project>(),
+            It.IsAny<Expression<Func<Project, IEnumerable<Project>>>>()));
+
+            _projectRepository
+                .Setup(p => p.Delete(It.IsAny<Project>()));
+
+            _unitOfWork
+                .Setup(u => u.SaveChangesAsync())
+                .Returns(Task.CompletedTask);
+
+            // Act
+            await _projectService.Delete(project.ProjectId);
+
+            // Assert
+            _projectStateService
+                .Verify(p =>
+                    p.CheckProjectAndParentsToChangeState(It.IsAny<int?>()), Times.Once);
+
+            _projectRepository
+                .Verify(
+                    p => p.Delete(It.IsAny<Project>()),
+                    Times.Exactly(3));
+        }
     }
 }

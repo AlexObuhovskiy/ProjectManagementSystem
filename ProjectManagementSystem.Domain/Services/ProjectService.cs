@@ -126,7 +126,6 @@ namespace ProjectManagementSystem.Domain.Services
             foreach (var project in projectToDeleteChildren.InverseParent)
             {
                 DeleteProjectWithAllChildren(project);
-                _projectRepository.Delete(project);
             }
 
             _projectRepository.Delete(projectToDeleteChildren);

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Internal;
 using ProjectManagementSystem.DataAccess.Extensions;
 using ProjectManagementSystem.DataAccess.Interfaces;
 using ProjectManagementSystem.Domain.Enums;
@@ -84,18 +86,20 @@ namespace ProjectManagementSystem.Domain.Services
         {
             // ReSharper disable once PossibleInvalidOperationException
             var existingTask = await GetEntityById(taskRequestUpdateDto.TaskId.Value);
+            
             var existingTaskProjectId = existingTask.ProjectId;
             var entityToSave = _mapper.Map(taskRequestUpdateDto, existingTask);
             SetupTaskByState(entityToSave);
 
             _taskRepository.Update(entityToSave);
 
-            await _projectStateService.CheckProjectAndParentsToChangeState(taskRequestUpdateDto.ProjectId);
-
             if (existingTaskProjectId != taskRequestUpdateDto.ProjectId)
             {
+                await CheckTaskCanChangeProject(entityToSave);
                 await _projectStateService.CheckProjectAndParentsToChangeState(existingTaskProjectId);
             }
+
+            await _projectStateService.CheckProjectAndParentsToChangeState(taskRequestUpdateDto.ProjectId);
 
             try
             {
@@ -114,12 +118,24 @@ namespace ProjectManagementSystem.Domain.Services
         /// <inhertidoc/>
         public async Task Delete(int id)
         {
-            var existingTask = await _taskRepository.GetByIdAsync(id);
+            var existingTask = await GetEntityById(id);
             _taskRepository.LoadAllChildren(existingTask, task => task.InverseParent);
 
             DeleteTaskWithAllChildren(existingTask);
             await _projectStateService.CheckProjectAndParentsToChangeState(existingTask.ProjectId);
             await _unitOfWork.SaveChangesAsync();
+        }
+
+        private async Task CheckTaskCanChangeProject(DataAccess.Models.Task task)
+        {
+            _taskRepository.LoadAllChildren(task, t => t.InverseParent);
+            var parent = await _taskRepository.GetByIdAsync(task.ParentId);
+
+            if (task.InverseParent.Any(t => t.ProjectId != task.ProjectId) ||
+                parent != null && parent.ProjectId != task.ProjectId)
+            {
+                throw new UpdateException("Can't update ProjectId of task.");
+            }
         }
 
         private void SetupTaskByState(DataAccess.Models.Task task)
@@ -145,7 +161,6 @@ namespace ProjectManagementSystem.Domain.Services
             foreach (var task in taskToDeleteChildren.InverseParent)
             {
                 DeleteTaskWithAllChildren(task);
-                _taskRepository.Delete(task);
             }
 
             _taskRepository.Delete(taskToDeleteChildren);
