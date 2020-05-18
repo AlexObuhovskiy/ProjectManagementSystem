@@ -333,10 +333,11 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
         public async Task Update_WhenProjectIdChanged_ThenCheckProjectAndParentsToChangeStateCalled()
         {
             // Arrange
+            int projectId = 1;
             var dto = new TaskRequestUpdateDto
             {
                 TaskId = 1,
-                ProjectId = 1
+                ProjectId = projectId
             };
 
             var task = new DataAccess.Models.Task
@@ -350,7 +351,11 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
 
             _mapper
                 .Setup(m => m.Map(It.IsAny<TaskRequestUpdateDto>(), It.IsAny<DataAccess.Models.Task>()))
-                .Returns((TaskRequestUpdateDto _, DataAccess.Models.Task t) => t);
+                .Returns((TaskRequestUpdateDto taskRequestUpdateDto, DataAccess.Models.Task t) =>
+                {
+                    t.ProjectId = projectId;
+                    return t;
+                });
 
             _taskRepository
                 .Setup(p => p.Update(It.IsAny<DataAccess.Models.Task>()));

@@ -93,13 +93,7 @@ namespace ProjectManagementSystem.Domain.Services
 
             _taskRepository.Update(entityToSave);
 
-            if (existingTaskProjectId != taskRequestUpdateDto.ProjectId)
-            {
-                await CheckTaskCanChangeProject(entityToSave);
-                await _projectStateService.CheckProjectAndParentsToChangeState(existingTaskProjectId);
-            }
-
-            await _projectStateService.CheckProjectAndParentsToChangeState(taskRequestUpdateDto.ProjectId);
+            await UpdateRelatedProjects(existingTaskProjectId, entityToSave);
 
             try
             {
@@ -124,6 +118,17 @@ namespace ProjectManagementSystem.Domain.Services
             DeleteTaskWithAllChildren(existingTask);
             await _projectStateService.CheckProjectAndParentsToChangeState(existingTask.ProjectId);
             await _unitOfWork.SaveChangesAsync();
+        }
+
+        private async Task UpdateRelatedProjects(int existingTaskProjectId, DataAccess.Models.Task entityToSave)
+        {
+            if (existingTaskProjectId != entityToSave.ProjectId)
+            {
+                await CheckTaskCanChangeProject(entityToSave);
+                await _projectStateService.CheckProjectAndParentsToChangeState(existingTaskProjectId);
+            }
+
+            await _projectStateService.CheckProjectAndParentsToChangeState(entityToSave.ProjectId);
         }
 
         private async Task CheckTaskCanChangeProject(DataAccess.Models.Task task)
