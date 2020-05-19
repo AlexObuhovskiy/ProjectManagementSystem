@@ -51,6 +51,7 @@ namespace ProjectManagementSystem.Api
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IProjectStateService, ProjectStateService>();
             services.AddScoped<ITaskService, TaskService>();
+            services.AddScoped<IExcelExportService, ExcelExportService>();
 
             services.AddSwaggerGen();
 

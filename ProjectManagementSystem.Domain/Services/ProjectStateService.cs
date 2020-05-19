@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using ProjectManagementSystem.DataAccess.Extensions;
 using ProjectManagementSystem.DataAccess.Interfaces;
 using ProjectManagementSystem.DataAccess.Models;
@@ -41,7 +40,7 @@ namespace ProjectManagementSystem.Domain.Services
 
             Project project = await _projectRepository.GetByIdAsync(id.Value);
 
-            var currentState = await GetCurrentProjectStateById(project);
+            var currentState = await GetCurrentProjectState(project);
             if (currentState == (State)project.State)
             {
                 return;
@@ -52,7 +51,7 @@ namespace ProjectManagementSystem.Domain.Services
             await CheckProjectAndParentsToChangeState(project.ParentId);
         }
 
-        private async Task<State> GetCurrentProjectStateById(Project project)
+        private async Task<State> GetCurrentProjectState(Project project)
         {
             var allProjectIds = _projectRepository.GetAllProjectIdArray(project);
             var tasks = await _taskRepository.GetAllTaskIncludeSubProjects(allProjectIds);
