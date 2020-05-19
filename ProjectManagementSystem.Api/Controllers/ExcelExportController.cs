@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ProjectManagementSystem.Domain.Interfaces;
 using ProjectManagementSystem.Domain.Models.ExcelExport;
@@ -26,21 +27,21 @@ namespace ProjectManagementSystem.Api.Controllers
         }
 
         /// <summary>
-        /// Excels the specified date.
+        /// Exports the inprogress projects and tasks for date.
         /// </summary>
-        /// <param name="date">The date.</param>
-        /// <returns>IActionResult.</returns>
+        /// <param name="dto">The dto.</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         [HttpPost]
         [Produces("application/octet-stream")]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(byte[]))]
-        public IActionResult Excel([FromBody]ExcelExportRequestDto dto)
+        public async Task<IActionResult> ExportInprogressProjectsAndTasksForDate([FromBody]ExcelExportRequestDto dto)
         {
-            var content = _excelExportService.ExportForDate(dto.ExportDate);
+            var content = await _excelExportService.ExportInprogressForDate(dto.ExportDate);
 
             return File(
                 content,
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "users.xlsx");
+                "Project and tasks in progress.xlsx");
         }
     }
 }

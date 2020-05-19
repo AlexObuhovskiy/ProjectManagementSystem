@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace ProjectManagementSystem.Domain.Interfaces
 {
@@ -8,9 +9,10 @@ namespace ProjectManagementSystem.Domain.Interfaces
     public interface IExcelExportService
     {
         /// <summary>
-        /// Excels the export.
+        /// Exports the excel bytes with project and tasks inprogress for date.
         /// </summary>
+        /// <param name="date">The date.</param>
         /// <returns>System.Byte[].</returns>
-        byte[] ExportForDate(DateTime date);
+        Task<byte[]> ExportInprogressForDate(DateTime date);
     }
 }
