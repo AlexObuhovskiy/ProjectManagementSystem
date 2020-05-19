@@ -36,15 +36,9 @@ namespace ProjectManagementSystem.Domain.Services
                     p => date > p.StartDate && (date < p.FinishDate || p.FinishDate == null),
                     inc => inc.Include(p => p.Task));
 
-            if (!inProgressProjectList.Any())
-            {
-                return null;
-            }
-
             using (var workbook = new XLWorkbook())
             {
                 var worksheet = workbook.Worksheets.Add("Projects with tasks in progress");
-                
                 var currentRow = 1;
 
                 worksheet.Cell(currentRow, 1).Value = "Project code";

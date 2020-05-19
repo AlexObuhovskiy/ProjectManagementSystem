@@ -34,6 +34,7 @@ namespace ProjectManagementSystem.Api.Controllers
         [HttpPost]
         [Produces("application/octet-stream")]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(byte[]))]
+        [ProducesResponseType((int)HttpStatusCode.NotAcceptable, Type = typeof(string))]
         public async Task<IActionResult> ExportInprogressProjectsAndTasksForDate([FromBody]ExcelExportRequestDto dto)
         {
             var content = await _excelExportService.ExportInprogressForDate(dto.ExportDate);
