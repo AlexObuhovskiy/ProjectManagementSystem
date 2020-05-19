@@ -39,11 +39,7 @@ namespace ProjectManagementSystem.Domain.Services
                 return;
             }
 
-            Project project = (
-                    await _projectRepository.Get(
-                        p => p.ProjectId == id,
-                        p => p.Include(x => x.Task)))
-                .First();
+            Project project = await _projectRepository.GetByIdAsync(id.Value);
 
             var currentState = await GetCurrentProjectStateById(project);
             if (currentState == (State)project.State)
@@ -58,7 +54,8 @@ namespace ProjectManagementSystem.Domain.Services
 
         private async Task<State> GetCurrentProjectStateById(Project project)
         {
-            var tasks = await _projectRepository.GetAllTaskIncludeSubProjects(project, _taskRepository);
+            var allProjectIds = _projectRepository.GetAllProjectIdArray(project);
+            var tasks = await _taskRepository.GetAllTaskIncludeSubProjects(allProjectIds);
 
             if (tasks.Any() && tasks.All(task => (State)task.State == State.Completed))
             {

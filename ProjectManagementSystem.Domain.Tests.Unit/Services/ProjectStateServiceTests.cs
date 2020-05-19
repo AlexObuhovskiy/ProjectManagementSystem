@@ -40,19 +40,16 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
         {
             // Arrange
             _projectRepository
-                .Setup(p => p.Get(
-                    It.IsAny<Expression<Func<Project, bool>>>(),
-                    It.IsAny<Func<IQueryable<Project>, IIncludableQueryable<Project, object>>>()));
+                .Setup(p => p.GetByIdAsync(
+                    It.IsAny<int>()));
 
             // Act
             await _projectStateService.CheckProjectAndParentsToChangeState(null);
 
             // Assert
             _projectRepository
-                .Verify(p => p.Get(
-                    It.IsAny<Expression<Func<Project, bool>>>(),
-                    It.IsAny<Func<IQueryable<Project>, IIncludableQueryable<Project, object>>>()),
-                    Times.Never);
+                .Verify(p => p.GetByIdAsync(
+                        It.IsAny<int>()), Times.Never);
         }
 
         [Fact]
@@ -74,19 +71,17 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
             };
 
             _projectRepository
-                .Setup(p => p.Get(
-                    It.IsAny<Expression<Func<Project, bool>>>(),
-                    It.IsAny<Func<IQueryable<Project>, IIncludableQueryable<Project, object>>>()))
-                .Returns(Task.FromResult(new[] {project}));
+                .Setup(p => p.GetByIdAsync(
+                    It.IsAny<int>()))
+                .Returns(Task.FromResult(project));
 
             // Act
             await _projectStateService.CheckProjectAndParentsToChangeState(project.ProjectId);
 
             // Assert
             _projectRepository
-                .Verify(p => p.Get(
-                        It.IsAny<Expression<Func<Project, bool>>>(),
-                        It.IsAny<Func<IQueryable<Project>, IIncludableQueryable<Project, object>>>()),
+                .Verify(p => p.GetByIdAsync(
+                        It.IsAny<int>()),
                     Times.Once);
             project.State.Should().Be((int) State.Planned);
         }
@@ -117,10 +112,9 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
             };
 
             _projectRepository
-                .Setup(p => p.Get(
-                    It.IsAny<Expression<Func<Project, bool>>>(),
-                    It.IsAny<Func<IQueryable<Project>, IIncludableQueryable<Project, object>>>()))
-                .Returns(Task.FromResult(new[] {project}));
+                .Setup(p => p.GetByIdAsync(
+                    It.IsAny<int>()))
+                .Returns(Task.FromResult(project));
             var utcTimeStart = DateTime.UtcNow;
 
             _taskRepository.Setup(t => t.Get(
@@ -135,9 +129,8 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
 
             // Assert
             _projectRepository
-                .Verify(p => p.Get(
-                        It.IsAny<Expression<Func<Project, bool>>>(),
-                        It.IsAny<Func<IQueryable<Project>, IIncludableQueryable<Project, object>>>()),
+                .Verify(p => p.GetByIdAsync(
+                        It.IsAny<int>()),
                     Times.Once);
             project.State.Should().Be((int) state);
             if (isStartDateNull)
@@ -189,14 +182,11 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
             int indexOfProject = 0;
 
             _projectRepository
-                .Setup(p => p.Get(
-                    It.IsAny<Expression<Func<Project, bool>>>(),
-                    It.IsAny<Func<IQueryable<Project>, IIncludableQueryable<Project, object>>>()))
-                .Returns((
-                    Expression<Func<Project, bool>> ex,
-                    Func<IQueryable<Project>, IIncludableQueryable<Project, object>> _) =>
+                .Setup(p => p.GetByIdAsync(
+                    It.IsAny<int>()))
+                .Returns((int _) =>
                 {
-                    return Task.FromResult(new[] { listOfProject[indexOfProject]});
+                    return Task.FromResult(listOfProject[indexOfProject]);
                 })
                 .Callback(() =>
                 {
@@ -217,10 +207,7 @@ namespace ProjectManagementSystem.Domain.Tests.Unit.Services
 
             // Assert
             _projectRepository
-                .Verify(p => p.Get(
-                        It.IsAny<Expression<Func<Project, bool>>>(),
-                        It.IsAny<Func<IQueryable<Project>, IIncludableQueryable<Project, object>>>()),
-                    Times.Exactly(2));
+                .Verify(p => p.GetByIdAsync(It.IsAny<int>()), Times.Exactly(2));
             project.State.Should().Be((int)State.InProgress);
             parentProject.State.Should().Be((int)State.InProgress);
         }

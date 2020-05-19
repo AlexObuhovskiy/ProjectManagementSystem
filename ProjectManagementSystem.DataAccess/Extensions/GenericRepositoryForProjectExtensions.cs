@@ -25,23 +25,32 @@ namespace ProjectManagementSystem.DataAccess.Extensions
         }
 
         /// <summary>
-        /// Gets all task include sub projects.
+        /// Gets all project identifier array.
         /// </summary>
         /// <param name="repository">The repository.</param>
         /// <param name="project">The project.</param>
-        /// <param name="taskRepository">The task repository.</param>
-        /// <returns>System.Threading.Tasks.Task&lt;Task[]&gt;.</returns>
-        public static async System.Threading.Tasks.Task<Task[]> GetAllTaskIncludeSubProjects(
+        /// <returns>System.Int32[].</returns>
+        public static int[] GetAllProjectIdArray(
             this IGenericRepository<Project> repository,
-            Project project,
-            IGenericRepository<Task> taskRepository)
+            Project project)
         {
             List<Project> list = new List<Project>();
-
             repository.LoadAllChildren(project, list);
-            var projectIdList = list.Select(y => y.ProjectId).ToList();
 
-            var allTasks = (await taskRepository.Get(x => projectIdList.Contains(x.ProjectId))).ToArray();
+            return list.Select(y => y.ProjectId).ToArray();
+        }
+
+        /// <summary>
+        /// Gets all task of projects by project's identifiers.
+        /// </summary>
+        /// <param name="taskRepository">The task repository.</param>
+        /// <param name="projectIdArray">The project identifier array.</param>
+        /// <returns>System.Threading.Tasks.Task&lt;Task[]&gt;.</returns>
+        public static async System.Threading.Tasks.Task<Task[]> GetAllTaskIncludeSubProjects(
+            this IGenericRepository<Task> taskRepository,
+            int[] projectIdArray)
+        {
+            var allTasks = (await taskRepository.Get(x => projectIdArray.Contains(x.ProjectId))).ToArray();
 
             return allTasks;
         }
